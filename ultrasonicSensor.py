@@ -15,3 +15,11 @@ GPIO.setup(Echo_Pin, GPIO.OUT)
 #Ensure trigger pin is low when ultrasonic sensor is started
 GPIO.output(Trig_Pin, GPIO.LOW)
 time.sleep(2)
+
+
+try:
+    pass
+
+except KeyboardInterrupt:
+    print("Measurement stopped")
+    GPIO.cleanup()
