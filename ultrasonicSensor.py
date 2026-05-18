@@ -37,6 +37,15 @@ try:
 
         pulse_duration = pulse_end - pulse_start
 
+        # Calculate Distance
+        # Speed of sound = 34300 cm/s
+        distance = pulse_duration * 17150
+
+        distance = round(distance, 2)
+        print("Distance:", distance, "cm")    # Print Result
+
+        time.sleep(0.5)
+
 except KeyboardInterrupt:
     print("Measurement stopped")
     GPIO.cleanup()
