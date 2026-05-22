@@ -1,40 +1,49 @@
-# Servo Motor Control using Raspberry Pi 3A+
-
 import RPi.GPIO as GPIO
 import time
 
-# Define Servo Pin
-SERVO_PIN = 18
+print("Started")
 
-# GPIO Setup
-GPIO.setmode(GPIO.BCM)
-GPIO.setup(SERVO_PIN,GPIO.OUT)
+def initialize_servo(pin):
+    GPIO.setmode(GPIO.BCM)
+    GPIO.setup(pin, GPIO.OUT)
 
+    pwm = GPIO.PWM(pin, 50)   # 50Hz
+    pwm.start(0)
 
-#PWM Setup
-pwm = GPIO.PWM(SERVO_PIN,50)  #servo motor works at 50Hz
+    return pwm
 
-#Start PWM
-pwm.start(0)
+def set_angle(pwm, angle):
+    duty = angle / 18 + 2.5
 
-try:
+    pwm.ChangeDutyCycle(duty)
+    time.sleep(0.02)
+
+def servo_motor(pwm):
+
     while True:
 
-        # 0° -> 180°
-        for i in range(2,13):
-            pwm.ChangeDutyCycle(i)
+        # 0 -> 180
+        for angle in range(0, 181, 5):
+            set_angle(pwm, angle)
 
-            time.sleep(0.4)
+        # 180 -> 0
+        for angle in range(180, -1, -5):
+            set_angle(pwm, angle)
 
-        # 180° -> 0°
-        for j in range(12,1,-1):
-            pwm.ChangeDutyCycle(j)
+# -----------------------------------
+# MAIN
+# -----------------------------------
 
-            time.sleep(0.5)
+SERVO_PIN = 18
 
+try:
+    pwm = initialize_servo(SERVO_PIN)
+
+    servo_motor(pwm)
 
 except KeyboardInterrupt:
-    print("Measurement stopped")
+    print("Stopped")
+
+finally:
+    pwm.stop()
     GPIO.cleanup()
-
-
