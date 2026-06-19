@@ -1,6 +1,12 @@
 import RPi.GPIO as GPIO
 import time
 
+# -----------------------------------------------------
+# Note:
+# This code must use in Raspberry Pi Side (Server Side)
+# ------------------------------------------------------
+
+
 # -------------------------------
 # FUNCTION: Initialize Ultrasonic
 # -------------------------------
