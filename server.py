@@ -3,12 +3,18 @@ import socket
 import time
 from ultrasonic import *
 
+# -----------------------------------------------
+# Note:
+# This code is run on Raspberry Pi Side(Server)
+# ----------------------------------------------
+
 # -----------------------------------------
 # ULTRASONIC
 # -----------------------------------------
 TRIG_PIN = 12
 ECHO_PIN = 13
 
+#Intializing the ultrasonic sensor
 initialize_ultrasonic(TRIG_PIN, ECHO_PIN)
 
 # -----------------------------------------
@@ -36,11 +42,15 @@ while True:
         # -----------------------------------------
         # SEND DISTANCE
         while True:
+            #Generating the pulse
             pulse = generate_pulse(TRIG_PIN, ECHO_PIN)
+
+            #Calculating the distance
             distance = calculate_distance(pulse)
 
             data = str(distance)
 
+            #Sends the data to client
             conn.send((data + "\n").encode())
 
             time.sleep(0.1)
