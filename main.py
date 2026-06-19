@@ -12,13 +12,13 @@ import cvzone
 # GLOBAL VARIABLES
 # -----------------------------------------
 current_distance = 0.0
-PI_IP = 'Your Raspberry Pi address'
+PI_IP = '192.168.4.188'
 PORT = 5001
 person_count = 0
 
 
 #Yolo Model
-model = YOLO('yolov8n.pt')
+model = YOLO('yolov8s.pt')
 
 # Load built-in class names from YOLO model
 classNames = model.names
@@ -104,27 +104,44 @@ def generate_frames():
                 # Get className
                 cls = int(box.cls[0])
                 class_classified = classNames[cls]
+                print(class_classified, confidence)
 
                 # 1. CHECK INSIDE THE LOOP FOR EACH OBJECT DETECTED
                 if class_classified == "person" and confidence > 0.3:
+
+
                     # 2. CHECK DISTANCE FOR THE PERSON
-                    if current_distance > 0 and current_distance <= 150:
+                    if current_distance > 0 and current_distance <= 40:
                         person_count += 1
 
-        # 3. DECIDE ALERT OR SAFE AFTER CHECKING ALL BOXES IN THE FRAME
-        if person_count > 0:
+                        # 3. DECIDE ALERT OR SAFE AFTER CHECKING ALL BOXES IN THE FRAME
+                        if person_count > 0:
 
-            status_color = (0, 0, 255)  # Red Color for Alert
-            alert_msg = "ALERT: Person in Zone!"
-            cv2.putText(frame, alert_msg, (20, 130), cv2.FONT_HERSHEY_SIMPLEX, 1, status_color, 3)
+                            status_color = (0, 0, 255)  # Red Color for Alert
+                            alert_msg = "ALERT: Person in Zone!"
+                            cv2.putText(frame, alert_msg, (20, 130), cv2.FONT_HERSHEY_SIMPLEX, 1, status_color, 3)
 
-        else:
+                    else:
 
-            status_color = (0, 255, 0)  # Green Color for Safe
-            cv2.putText(frame, "SAFE: Out of Range", (20, 130), cv2.FONT_HERSHEY_SIMPLEX, 1, status_color, 3)
+                        status_color = (0, 255, 0)  # Green Color for Safe
+                        cv2.putText(frame, "SAFE: Out of Range", (20, 130), cv2.FONT_HERSHEY_SIMPLEX, 1, status_color, 3)
 
+                #Check Suspicious object.In future custom dataset can be used for more advanced projects.
+                elif class_classified == "scissors" and confidence > 0.2:
+
+                        cvzone.cornerRect(frame, (x1, y1, w, h), l=2, t=2)
+
+                        cv2.putText(
+                            frame, f"WARNING: {class_classified}", (x1, y1 - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.7,
+                            (255,0 , 255), 2)
+
+                        cv2.putText(
+                            frame, "SUSPICIOUS OBJECT DETECTED", (20, 180), cv2.FONT_HERSHEY_SIMPLEX,
+                            0.6, (255, 0, 255), 3)
 
         # DISPLAY DISTANCE AND COUNT
+        status_color = (0, 0, 255)
+
         cv2.putText(frame, f"Distance: {current_distance:.1f} cm", (20, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, status_color, 2)
         cv2.putText(frame, f"Person Count: {person_count}", (20, 90), cv2.FONT_HERSHEY_SIMPLEX, 1, status_color, 2)
 
